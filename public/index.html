@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Market Pulse — Live news + liquidations</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Serif:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Serif:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" />
+
+  <link rel="stylesheet" href="/tokens.css" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body data-variant="main">
+
+  <div class="app">
+
+    <div class="ticker-bar" role="region" aria-label="Live market ticker">
+      <div class="ticker-track" id="ticker-track"></div>
+    </div>
+
+    <header class="kpi-strip">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"></div>
+        <div>
+          <div class="brand-name">Market Pulse</div>
+          <div class="brand-tag">live news + liquidations</div>
+        </div>
+      </div>
+
+      <div class="kpi-spacer"></div>
+
+      <div class="kpi-list">
+        <div class="kpi">
+          <span class="kpi-label">News · 60min</span>
+          <span class="kpi-value" id="kpi-news">—</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Liq notional 24h</span>
+          <span class="kpi-value" id="kpi-notional">—</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Sentiment 60m</span>
+          <span class="kpi-value" id="kpi-sent-label">—</span>
+          <span class="kpi-gauge" id="kpi-sent-gauge"></span>
+        </div>
+        <div class="kpi" style="min-width:auto">
+          <span class="kpi-label">Health</span>
+          <span class="health-dot" id="health-dot" data-status="ok" tabindex="0" role="status">
+            <span class="dot" aria-hidden="true"></span>
+            <span id="health-label">…</span>
+            <div class="health-tooltip" role="tooltip">
+              <div style="font-size:10px;color:var(--text-tertiary);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">Modules</div>
+              <div id="health-list"></div>
+            </div>
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+
+      <aside class="sidebar" aria-label="Filters">
+        <div class="search-wrap">
+          <input type="text" class="search-input" id="search" placeholder="Search…" aria-label="Search news" />
+          <span class="search-kbd" aria-hidden="true">/</span>
+        </div>
+        <div id="filters-list"></div>
+        <div class="min-liq" aria-label="Minimum liquidation notional">
+          <div class="min-liq-row">
+            <span>Min liq notional</span>
+            <span class="v" id="min-liq-val">$0K</span>
+          </div>
+          <input type="range" id="min-liq" min="0" max="5000" step="100" value="0" />
+        </div>
+      </aside>
+
+      <section class="feed" aria-label="News feed">
+        <div class="feed-header">
+          <h1 class="feed-title">All news</h1>
+          <span class="feed-meta">
+            <span class="live">Live</span>
+            <span style="margin-left:8px">refresh 5min · ranked by impact</span>
+          </span>
+        </div>
+        <div id="spotlight-wrap"></div>
+        <div id="feed-list"></div>
+      </section>
+
+      <aside class="ops" aria-label="Live operations">
+
+        <div class="ops-section">
+          <div class="ops-h">
+            <h2>Sentiment · stacked</h2>
+            <div class="ops-tabs" role="tablist" data-grp="sent-window">
+              <button data-val="1h" aria-selected="true">1h</button>
+              <button data-val="4h" aria-selected="false">4h</button>
+              <button data-val="24h" aria-selected="false">24h</button>
+            </div>
+          </div>
+          <div class="sentiment-chart">
+            <svg id="sent-svg" preserveAspectRatio="none" aria-label="Sentiment over last 60 minutes"></svg>
+            <div class="x-axis" id="sent-xaxis"></div>
+            <div class="legend">
+              <span><i style="background:var(--bull-fg)"></i>Bullish</span>
+              <span><i style="background:var(--bear-fg)"></i>Bearish</span>
+              <span><i style="background:var(--neutral-fg);opacity:.6"></i>Neutral</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ops-section">
+          <div class="ops-h">
+            <h2>Liquidations · live</h2>
+            <span class="feed-meta"><span class="live">Live</span></span>
+          </div>
+          <div id="liq-feed" class="liq-feed" aria-live="polite" aria-relevant="additions"></div>
+        </div>
+
+        <div class="ops-section">
+          <div class="ops-h">
+            <h2>Funding · 8h</h2>
+            <span style="font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary)">PERP</span>
+          </div>
+          <div id="heatmap" class="heatmap"></div>
+        </div>
+
+      </aside>
+
+    </main>
+
+  </div>
+
+  <footer style="padding:24px 16px;text-align:center;font-size:11.5px;color:var(--text-tertiary);border-top:1px solid var(--border-subtle);margin-top:32px">
+    News: Finnhub &amp; Alpha Vantage · Liquidations: Binance, Bybit, BitMEX ·
+    Derivatives: Bybit · Quotes: Yahoo &amp; Coinbase ·
+    <a href="/api/health" target="_blank" style="color:var(--text-secondary)">/api/health</a>
+    <div style="margin-top:8px;max-width:900px;margin-left:auto;margin-right:auto;line-height:1.5">
+      For informational purposes only. The data shown (news, sentiment,
+      liquidations, funding rates, quotes) does not constitute investment
+      advice, a recommendation, or a solicitation to buy or sell any
+      financial instrument. Third-party sources may be incomplete, delayed,
+      or inaccurate. Always verify with an official source before making
+      any decision.
+    </div>
+  </footer>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
