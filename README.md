@@ -1,8 +1,10 @@
 # market-pulse
 
 [![CI](https://github.com/Figaro-Trading/market-pulse/actions/workflows/ci.yml/badge.svg)](https://github.com/Figaro-Trading/market-pulse/actions/workflows/ci.yml)
+[![Docker](https://github.com/Figaro-Trading/market-pulse/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/Figaro-Trading/market-pulse/actions/workflows/docker-publish.yml)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%E2%89%A522-brightgreen.svg)](package.json)
+[![ghcr.io](https://img.shields.io/badge/ghcr.io-figaro--trading%2Fmarket--pulse-2496ED?logo=docker&logoColor=white)](https://github.com/Figaro-Trading/market-pulse/pkgs/container/market-pulse)
 
 Complete backend for a trader-oriented financial news site. Aggregates **two
 content families** behind a single API:
@@ -338,6 +340,25 @@ For a commercial license (out of AGPL), contact the author.
 ---
 
 ## Docker
+
+Pull the prebuilt image from GitHub Container Registry — multi-arch
+(linux/amd64, linux/arm64), signed with build provenance attestation:
+
+```bash
+docker pull ghcr.io/figaro-trading/market-pulse:latest
+docker run -p 3001:3001 --env-file .env ghcr.io/figaro-trading/market-pulse:latest
+```
+
+Available tags:
+
+| Tag | Source |
+|---|---|
+| `latest` | latest released `vX.Y.Z` tag |
+| `X.Y.Z`, `X.Y`, `X` | specific release version |
+| `main` | rolling build from `main` (dev) |
+| `sha-abc1234` | specific commit SHA |
+
+Or build locally from source:
 
 ```bash
 docker build -t market-pulse .
